@@ -1,0 +1,51 @@
+1.)find / -group users -type f 2>/dev/null - This command is used to search for files that belong to the "users" group on a Unix-like system. The `-group users` flag specifies that we're looking for files owned by the "users" group. The `-type f` flag specifies that we're only interested in regular files (not directories or other types of files). 
+The `2>/dev/null` part redirects any error messages (such as "permission denied" messages when searching in directories where the user running the command doesn't have permission) to /dev/null, effectively suppressing them from the output. This can make the output cleaner and easier to read.
+NB: after group is users which shows content owned by user. We can change the user accroding to our need.
+
+2.)Null Byte Injection:
+Some web applications use the file name provided by the user to determine the file's type. Attackers can append a null byte (%00) to the end of the file name to terminate the string and bypass checks based on the file extension. For example, uploading a file named malicious.php%00.jpg might bypass checks that only validate the .jpg extension.
+
+3.)find / -user root -perm /4000 2>/dev/null - This command searches the entire file system for files owned by the user "root" and have the "setuid" (SUID)bit set, which means those files can be executed with elevated privileges regardless of who runs them.
+
+4.)GTFObins(website) - GTFOBins is binary collection for security professionals, penetration testers, and system administrators to understand how Unix binaries can be exploited to bypass local security restrictions. This is used mainly to get reverse shell binary inorder to include in target system.
+General use: The binary is selected by using sudo -l command in target system inorder to see sudo permission file. After detecting the sudo enabled file we can refer the binary in this website for that file from sudo section in that website.
+
+5.)Pentestmokey(website) - Pentestmonkey is a well-known online resource for penetration testers and security enthusiasts. It provides a variety of useful tools, cheat sheets, and resources related to penetration testing, security assessments, and ethical hacking.
+
+6.)2to3 - It is a part of python standard library to convert python2 to python3 (if it is not installed type apt install 2to3)
+usage: 2to3 -w your_python2_script.py
+
+7.)find / -name "<filename>" -To find location of file only having filename
+
+8.)sudo chmod u-s file_name - To remove SUID permission from the file.
+
+9.)sudo chmod u+s file_name - To set SUID permission for file.
+
+10.)2>/dev/null - To exclude file having non permission
+
+11.)url?balance_part_url=javascript:js_command; - Is used in links or address bars, while <script> is part of the HTML document for embedding JavaScript.
+				  XSS
+
+12.)url_part_until#data:file, js_commands; - Is used if it consists of files in different part of browser. XSS
+
+13.)CTRL+U is to find source code.
+
+14.)Search GitHub tool along with keyword releases inorder to get installable file
+
+15.)crackmes.one : password for crackme.one .NET reverse practice application password for uncompression
+
+16.)sudo -l: if output contains (ALL) NOPASSWD: ALL then You can run any command as root without a password.
+
+17.)inurl:"wa.exe?TICKET": XSS vulnerable dork (https://chatgpt.com/share/684ead36-8150-8013-a883-006cf34e2c02) CVE-2022-39195
+
+18.) /bin/bash -i 
+     python3 -c 'import pty;pty.spawn("/bin/bash")'
+     export TERM=xterm   - Commands to get interactive   
+                           stable shell in meterperter 
+
+19.) ssh -i private_key_file -p port_number user_name@host: Used when ssh private key file is available. -p is used only to define the port if ssh port is custom.
+							    When using private_key_file, change permission to 600. Sometimes there will be no password but if there exists password
+							    Crack it with john(Commands are Explained below).
+
+20.)ssh2john private_key_file > new_file.hash
+    john -w=wordlist_name new_file.hash
