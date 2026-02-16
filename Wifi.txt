@@ -1,0 +1,173 @@
+To crack .cap file: aircrack-ng file_name.cap -w wordlist_name
+	NB: wordlists location - /usr/share/wordlists (For this purpose , use wifite wordlists)
+
+
+
+
+
+ PCAP Analysis (Offline WiFi CTF).
+
+This is very common in CTFs because it tests analysis skills, not just tool usage.
+
+📦PCAP Analysis (Offline WiFi CTF)
+
+In this type of challenge, you are given a file like:
+
+capture.pcap
+wifi_dump.cap
+challenge.pcapng
+
+
+You are not capturing live traffic. Everything is already recorded.
+
+Your job:
+
+Extract useful WiFi artifacts
+
+Recover credentials or keys
+
+Find the flag inside packets
+
+🔎 Step 1: Open in Wireshark
+wireshark capture.pcap
+
+🎯 Scenario A: WPA/WPA2 Handshake Extraction
+What to Look For
+
+Filter:
+
+eapol
+
+
+If you see 4 packets between AP and client → you captured the 4-way handshake.
+
+4
+Confirm Handshake
+
+Go to:
+
+Edit → Preferences → Protocols → IEEE 802.11
+
+
+Enable:
+✔ “Enable decryption”
+✔ “Assume packets have FCS”
+
+Wireshark will sometimes show:
+
+WPA Key: handshake
+
+🔓 Step 2: Convert PCAP to Crackable Hash
+
+Use:
+
+aircrack-ng capture.pcap -J output
+
+
+This generates:
+
+output.hccapx
+
+
+Then crack using:
+
+hashcat
+
+hashcat -m 2500 output.hccapx rockyou.txt
+
+
+If cracked → password = flag.
+
+🎯 Scenario B: PMKID Attack (More Advanced)
+
+Sometimes no full handshake is present.
+
+Filter:
+
+eapol
+
+
+But only one packet exists.
+
+That may be PMKID-based attack.
+
+Extract using:
+
+hcxdumptool
+hcxpcapngtool capture.pcap -o hash.hc22000
+
+
+Then:
+
+hashcat -m 22000 hash.hc22000 rockyou.txt
+
+🎯 Scenario C: Hidden Flag Inside Packets
+
+Sometimes the flag is NOT a password.
+
+Look for:
+
+1️⃣ Beacon Frames
+
+Filter:
+
+wlan.fc.type_subtype == 0x08
+
+
+Sometimes flag hidden in:
+
+SSID
+
+Vendor specific tag
+
+Unusual hex data
+
+2️⃣ HTTP Traffic After Decryption
+
+If WiFi is open:
+
+Filter:
+
+http
+
+
+Then:
+Right click → Follow → TCP Stream
+
+Flag may appear in:
+
+Login POST request
+
+Downloaded file
+
+Cookies
+
+3️⃣ Base64 Encoded Flag in Payload
+
+Check:
+
+Data → Hex view
+
+
+Copy suspicious strings and decode:
+
+echo "string" | base64 -d
+
+🎯 Scenario D: Extract Objects
+
+If traffic contains file transfer:
+
+In Wireshark:
+
+File → Export Objects
+
+
+Export:
+
+HTTP
+
+SMB
+
+FTP
+
+Sometimes the flag is inside an image or PDF.

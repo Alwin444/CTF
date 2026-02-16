@@ -1,0 +1,306 @@
+Using Wireshark in CTFs is primarily about traffic analysis — inspecting captured packets (usually a .pcap file) to extract credentials, hidden strings, or encoded flags.
+
+general method: inspect all tcp pack and find any hints.
+
+
+
+1️⃣ What You Usually Get in a CTF
+
+A .pcap or .pcapng file
+
+Or live network traffic
+
+Or a challenge description like:
+
+“Find the flag hidden in network traffic”
+
+Your objective: extract readable or encoded data from packets.
+
+2️⃣ Open the Capture
+
+Open Wireshark
+
+File → Open → challenge.pcap
+
+Immediately check:
+
+Statistics → Protocol Hierarchy
+
+See which protocols are used (HTTP? FTP? DNS? TCP?)
+
+This gives direction.
+
+3️⃣ Most Common CTF Flag Locations
+Protocol	Where Flag is Hidden
+HTTP	GET/POST parameters
+FTP	Username/password
+DNS	Subdomain exfiltration
+TCP	Raw payload
+ICMP	Encoded data
+ARP	Rare but possible
+4️⃣ Key Wireshark Techniques for CTF
+🔎 A. Follow TCP Stream (Most Important)
+
+Right-click a packet →
+Follow → TCP Stream
+
+This reconstructs full conversation.
+
+Look for:
+
+flag{something_here}
+
+
+Or:
+
+Base64 strings
+
+Encoded text
+
+Suspicious commands
+
+🔎 B. Apply Display Filters
+
+Very important for speed.
+
+Common filters:
+
+http
+ftp
+dns
+tcp
+udp
+icmp
+
+
+To find text inside packets:
+
+frame contains "flag"
+
+
+Or:
+
+tcp contains "flag"
+
+🔎 C. Search Function
+
+Ctrl + F
+
+Search:
+
+String
+
+Packet details
+
+Packet bytes
+
+Try searching:
+
+flag
+ctf
+key
+password
+
+🔎 D. Extract Objects (HTTP)
+
+If HTTP traffic exists:
+
+File → Export Objects → HTTP
+
+You can extract:
+
+Images
+
+Files
+
+Text files
+
+Hidden files
+
+Sometimes flag is inside a downloaded file.
+
+5️⃣ Typical Real CTF Scenarios
+🟢 Scenario 1: HTTP Basic Auth
+4
+
+Filter:
+
+http
+
+
+Look for:
+
+Authorization: Basic xxxxxxxxx
+
+
+That string is Base64 encoded.
+
+Decode it.
+
+You may get:
+
+admin:flag{hidden_flag}
+
+🟢 Scenario 2: DNS Exfiltration
+
+Attacker encodes flag inside subdomains.
+
+Filter:
+
+dns
+
+
+Look at:
+
+abc123.flagpart1.example.com
+def456.flagpart2.example.com
+
+
+Combine parts → decode.
+
+🟢 Scenario 3: Raw TCP Data
+
+Filter:
+
+tcp
+
+
+Right-click → Follow TCP stream.
+
+You may see:
+
+Hex dump
+
+Encoded blob
+
+Copy → decode in:
+
+CyberChef
+
+Base64 decoder
+
+XOR brute force
+
+🟢 Scenario 4: FTP Credentials
+
+Filter:
+
+ftp
+
+
+Look for:
+
+USER
+PASS
+
+
+Sometimes:
+
+PASS flag{ftp_flag}
+
+6️⃣ Advanced Filtering Tricks
+
+Find packets with suspicious large data:
+
+tcp.len > 100
+
+
+Find specific IP:
+
+ip.addr == 192.168.1.10
+
+
+Find file transfers:
+
+http.response.code == 200
+
+7️⃣ Encoding Awareness (Very Important)
+
+Flags are often:
+
+Base64
+
+Hex
+
+ROT13
+
+XOR encrypted
+
+Gzip compressed
+
+If you see something like:
+
+ZmxhZ3t0ZXN0X2ZsYWd9
+
+
+That is Base64 → decode.
+
+8️⃣ Professional Workflow (What Good CTF Players Do)
+
+Open PCAP
+
+Check Protocol Hierarchy
+
+Identify dominant protocol
+
+Filter by that protocol
+
+Follow streams
+
+Extract objects
+
+Decode suspicious data
+
+Reassemble fragmented traffic
+
+9️⃣ Pro-Level Tip (Time Saver)
+
+Instead of clicking manually:
+
+Use display filters smartly:
+
+frame contains "flag"
+
+
+If nothing:
+Search for:
+
+frame matches "[A-Za-z0-9+/=]{20,}"
+
+
+(This finds Base64-like patterns.)
+
+🔟 Tools Used Along With Wireshark
+
+CyberChef
+
+tshark (CLI version of Wireshark)
+
+binwalk
+
+strings (Linux command)
+
+Example:
+
+strings challenge.pcap | grep flag
+
+
+Sometimes faster than GUI.
+
+⚠️ Important CTF Mindset
+
+CTF network challenges are usually:
+
+Not deeply encrypted
+
+Intentionally solvable
+
+Flag is either:
+
+Clearly visible
+
+Lightly encoded
+
+Hidden in plain sight
+
+Don’t overthink initially.
