@@ -1,0 +1,13 @@
+For /etc/shadow craks:  unshadow passwd shadow > hashes.txt
+			john hashes.txt --wordlist=/usr/share/wordlists/rockyou.txt
+
+If you extract a file but it's password protected: zip2john secret.zip > ziphash.txt
+						   john ziphash.txt
+
+SSH Private Key with Passphrase(id_rsa): ssh2john id_rsa > keyhash.txt
+					 john keyhash.txt
+
+For Password protected pdf and word file: pdf2john flag.pdf > pdfhash.txt
+					  john pdfhash.txt
+
+
