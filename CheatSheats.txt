@@ -1,3 +1,6 @@
+Reverse shell command - nc -lvp port_number
+
+
 1.)find / -group users -type f 2>/dev/null - This command is used to search for files that belong to the "users" group on a Unix-like system. The `-group users` flag specifies that we're looking for files owned by the "users" group. The `-type f` flag specifies that we're only interested in regular files (not directories or other types of files). 
 The `2>/dev/null` part redirects any error messages (such as "permission denied" messages when searching in directories where the user running the command doesn't have permission) to /dev/null, effectively suppressing them from the output. This can make the output cleaner and easier to read.
 NB: after group is users which shows content owned by user. We can change the user accroding to our need.
@@ -49,3 +52,4 @@ usage: 2to3 -w your_python2_script.py
 
 20.)ssh2john private_key_file > new_file.hash
     john -w=wordlist_name new_file.hash
+
